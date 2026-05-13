@@ -48,12 +48,14 @@ export default function HistoryPage() {
   }, {} as Record<string, DailyStat[]>)
 
   const dayPL = (d: string) => (byDate[d] || []).reduce((s, x) => s + (x.pl_usd || 0), 0)
+  const dayOrders = (d: string) => (byDate[d] || []).reduce((s, x) => s + (x.orders_count || 0), 0)
 
   const year = currentMonth.getFullYear()
   const month = currentMonth.getMonth()
   const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`
   const monthDates = Object.keys(byDate).filter(d => d.startsWith(monthKey))
   const monthPL = monthDates.reduce((s, d) => s + dayPL(d), 0)
+  const monthOrders = monthDates.reduce((s, d) => s + dayOrders(d), 0)
   const monthWinDays = monthDates.filter(d => dayPL(d) > 0)
   const bestDay = monthDates.length > 0 ? monthDates.reduce((a, b) => dayPL(a) > dayPL(b) ? a : b) : null
   const worstDay = monthDates.length > 0 ? monthDates.reduce((a, b) => dayPL(a) < dayPL(b) ? a : b) : null
@@ -75,6 +77,9 @@ export default function HistoryPage() {
   const weeks: (number | null)[][] = []
   for (let i = 0; i < calDays.length; i += 5) weeks.push(calDays.slice(i, i + 5))
 
+  // max abs PL in month for intensity
+  const maxDayPL = Math.max(...monthDates.map(d => Math.abs(dayPL(d))), 1)
+
   function fmt(n: number, d = 2) { return (n || 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }) }
   function fmtK(n: number) {
     const abs = Math.abs(n)
@@ -85,6 +90,7 @@ export default function HistoryPage() {
   function fmtPL(n: number) { return (n >= 0 ? '+' : '-') + '$' + fmt(Math.abs(n)) }
   function plHex(n: number) { return n > 0 ? '#4ade80' : n < 0 ? '#f87171' : 'rgba(56,189,248,0.4)' }
   function fmtMonthLabel(date: Date) { return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase() }
+  function goToday() { setCurrentMonth(new Date()) }
   function prevMonth() { setCurrentMonth(new Date(year, month - 1, 1)) }
   function nextMonth() { setCurrentMonth(new Date(year, month + 1, 1)) }
   function dayKey(d: number) { return `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}` }
@@ -92,14 +98,36 @@ export default function HistoryPage() {
     const t = new Date()
     return t.getFullYear() === year && t.getMonth() === month && t.getDate() === d
   }
+  function isCurrentMonth() {
+    const t = new Date()
+    return t.getFullYear() === year && t.getMonth() === month
+  }
   function weekPL(weekIdx: number) {
     return weeks[weekIdx].reduce((s: number, d: number | null) => {
       if (!d) return s
       return s + dayPL(dayKey(d))
     }, 0)
   }
+  function weekOrders(weekIdx: number) {
+    return weeks[weekIdx].reduce((s: number, d: number | null) => {
+      if (!d) return s
+      return s + dayOrders(dayKey(d))
+    }, 0)
+  }
   function fmtDayShort(dateStr: string) {
     return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+  }
+  function cellBg(pl: number | null): string {
+    if (pl === null) return 'transparent'
+    if (pl === 0) return 'transparent'
+    const intensity = Math.min(Math.abs(pl) / maxDayPL, 1)
+    if (pl > 0) {
+      const alpha = Math.round(intensity * 180).toString(16).padStart(2, '0')
+      return `#0f3d1f${alpha}`
+    } else {
+      const alpha = Math.round(intensity * 180).toString(16).padStart(2, '0')
+      return `#3d0f0f${alpha}`
+    }
   }
 
   if (authLoading || dataLoading) return (
@@ -157,51 +185,56 @@ export default function HistoryPage() {
           PERFORMANCE
         </div>
 
-        {/* MONTHLY P/L BIG */}
-        <div className="bg-[#071428] border border-sky-400/20 px-4 py-4 mb-3 text-center relative overflow-hidden"
-          style={{ boxShadow: 'inset 0 0 40px rgba(56,189,248,0.03)' }}>
-          <div className="font-vt text-sm text-sky-400/60 tracking-[0.2em] mb-1">{fmtMonthLabel(currentMonth)}</div>
-          <div className="font-vt text-4xl md:text-5xl mb-3"
-            style={{ color: plHex(monthPL), textShadow: `0 0 20px ${plHex(monthPL)}66` }}>
-            {fmtPL(monthPL)}
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <button onClick={prevMonth}
-              className="font-vt text-sm text-sky-400/60 border border-sky-400/20 px-2.5 py-1 hover:text-sky-400 hover:border-sky-400 transition-all cursor-pointer bg-transparent">
-              ◄ PREV
-            </button>
-            <span className="font-vt text-base text-sky-400 tracking-widest px-2"
-              style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
-              {fmtMonthLabel(currentMonth)}
-            </span>
-            <button onClick={nextMonth}
-              className="font-vt text-sm text-sky-400/60 border border-sky-400/20 px-2.5 py-1 hover:text-sky-400 hover:border-sky-400 transition-all cursor-pointer bg-transparent">
-              NEXT ►
-            </button>
-          </div>
-        </div>
+        {/* TOP ROW: Monthly PL + Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
 
-        {/* MONTHLY STATS */}
-        <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
-          style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
-          MONTHLY STATS
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
-          {[
-            { label: 'BEST DAY', val: bestDay ? fmtPL(dayPL(bestDay)) : '+$0.00', sub: bestDay ? fmtDayShort(bestDay) : '—', color: '#4ade80', accent: 'bg-green-400' },
-            { label: 'WORST DAY', val: worstDay ? fmtPL(dayPL(worstDay)) : '-$0.00', sub: worstDay ? fmtDayShort(worstDay) : '—', color: '#f87171', accent: 'bg-red-400' },
-            { label: 'WIN DAYS', val: String(monthWinDays.length), sub: `of ${monthDates.length} days`, color: '#4ade80', accent: 'bg-green-400' },
-            { label: 'AVG DAILY', val: fmtPL(avgDaily), sub: 'USD equiv', color: plHex(avgDaily), accent: avgDaily >= 0 ? 'bg-green-400' : 'bg-red-400' },
-          ].map((c, i) => (
-            <div key={i} className="bg-[#071428] border border-sky-400/15 px-3 py-2.5 relative overflow-hidden"
-              style={{ clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))' }}>
-              <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${c.accent}`}
-                style={{ boxShadow: `0 0 6px ${c.color}` }} />
-              <div className="text-[10px] text-sky-400/60 tracking-[0.12em] mb-0.5 font-mono">{c.label}</div>
-              <div className="font-vt text-xl md:text-2xl" style={{ color: c.color, textShadow: `0 0 8px ${c.color}66` }}>{c.val}</div>
-              <div className="text-[10px] text-sky-400/40 mt-0.5 font-mono">{c.sub}</div>
+          {/* MONTHLY P/L BIG */}
+          <div className="bg-[#071428] border border-sky-400/20 px-6 py-5 flex flex-col items-center justify-center relative overflow-hidden"
+            style={{ boxShadow: 'inset 0 0 40px rgba(56,189,248,0.03)' }}>
+            <div className="absolute inset-0 pointer-events-none"
+              style={{ backgroundImage: 'linear-gradient(rgba(56,189,248,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.015) 1px,transparent 1px)', backgroundSize: '20px 20px' }} />
+            <div className="font-vt text-xs text-sky-400/50 tracking-[0.2em] mb-2 z-10">{fmtMonthLabel(currentMonth)}</div>
+            <div className="font-vt text-4xl md:text-5xl mb-1 z-10"
+              style={{ color: plHex(monthPL), textShadow: `0 0 24px ${plHex(monthPL)}55` }}>
+              {fmtPL(monthPL)}
             </div>
-          ))}
+            <div className="font-mono text-xs text-sky-400/40 mb-4 z-10">{monthOrders} orders this month</div>
+            <div className="flex items-center gap-2 z-10">
+              <button onClick={prevMonth}
+                className="font-vt text-xs text-sky-400/50 border border-sky-400/15 px-3 py-1.5 hover:text-sky-400 hover:border-sky-400/50 transition-all cursor-pointer bg-transparent">
+                ◄ PREV
+              </button>
+              {!isCurrentMonth() && (
+                <button onClick={goToday}
+                  className="font-vt text-xs text-sky-400 border border-sky-400/40 px-3 py-1.5 hover:bg-sky-400/10 transition-all cursor-pointer bg-transparent">
+                  TODAY
+                </button>
+              )}
+              <button onClick={nextMonth}
+                className="font-vt text-xs text-sky-400/50 border border-sky-400/15 px-3 py-1.5 hover:text-sky-400 hover:border-sky-400/50 transition-all cursor-pointer bg-transparent">
+                NEXT ►
+              </button>
+            </div>
+          </div>
+
+          {/* MONTHLY STATS 2x2 */}
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { label: 'BEST DAY', val: bestDay ? fmtPL(dayPL(bestDay)) : '+$0.00', sub: bestDay ? fmtDayShort(bestDay) : '—', color: '#4ade80', accent: 'bg-green-400' },
+              { label: 'WORST DAY', val: worstDay ? fmtPL(dayPL(worstDay)) : '-$0.00', sub: worstDay ? fmtDayShort(worstDay) : '—', color: '#f87171', accent: 'bg-red-400' },
+              { label: 'WIN DAYS', val: `${monthWinDays.length}/${monthDates.length}`, sub: monthDates.length > 0 ? `${Math.round(monthWinDays.length / monthDates.length * 100)}% win rate` : '—', color: '#4ade80', accent: 'bg-green-400' },
+              { label: 'AVG DAILY', val: fmtPL(avgDaily), sub: 'USD equiv', color: plHex(avgDaily), accent: avgDaily >= 0 ? 'bg-green-400' : 'bg-red-400' },
+            ].map((c, i) => (
+              <div key={i} className="bg-[#071428] border border-sky-400/15 px-4 py-3 relative overflow-hidden"
+                style={{ clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))' }}>
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${c.accent}`}
+                  style={{ boxShadow: `0 0 6px ${c.color}` }} />
+                <div className="text-[10px] text-sky-400/50 tracking-[0.12em] mb-1 font-mono">{c.label}</div>
+                <div className="font-vt text-xl md:text-2xl" style={{ color: c.color, textShadow: `0 0 8px ${c.color}55` }}>{c.val}</div>
+                <div className="text-[10px] text-sky-400/35 mt-1 font-mono">{c.sub}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* MONTHLY BAR CHART */}
@@ -209,46 +242,34 @@ export default function HistoryPage() {
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           MONTHLY P/L {year} (USD)
         </div>
-        <div className="bg-[#071428] border border-sky-400/15 px-3 pt-5 pb-2 mb-3">
+        <div className="bg-[#071428] border border-sky-400/15 px-3 pt-6 pb-2 mb-3">
           <div className="flex items-center gap-0.5 h-24 relative">
             <div className="absolute left-0 right-0 top-1/2 h-px bg-sky-400/15" />
             {monthlyPL.map((pl, i) => {
               const pct = Math.abs(pl) / maxMonthly * 44
-              const isCurrentMonth = i === month
+              const isCurrentM = i === month
               return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-0.5 h-full relative group">
+                <div key={i} className="flex-1 flex flex-col items-center gap-0.5 h-full relative group cursor-pointer">
                   <div className="flex-1 flex flex-col justify-end w-full">
                     {pl > 0 && (
                       <div className="transition-all mx-auto"
-                        style={{
-                          height: `${pct}px`,
-                          background: '#4ade80',
-                          boxShadow: isCurrentMonth ? '0 0 10px #4ade8099' : '0 0 4px #4ade8033',
-                          opacity: isCurrentMonth ? 1 : 0.65,
-                          width: '70%',
-                        }} />
+                        style={{ height: `${pct}px`, background: '#4ade80', boxShadow: isCurrentM ? '0 0 10px #4ade8099' : '0 0 4px #4ade8033', opacity: isCurrentM ? 1 : 0.6, width: '70%' }} />
                     )}
                   </div>
                   <div className="h-px w-full bg-sky-400/15" />
                   <div className="flex-1 flex flex-col justify-start w-full">
                     {pl < 0 && (
                       <div className="transition-all mx-auto"
-                        style={{
-                          height: `${pct}px`,
-                          background: '#f87171',
-                          boxShadow: isCurrentMonth ? '0 0 10px #f8717199' : '0 0 4px #f8717133',
-                          opacity: isCurrentMonth ? 1 : 0.65,
-                          width: '70%',
-                        }} />
+                        style={{ height: `${pct}px`, background: '#f87171', boxShadow: isCurrentM ? '0 0 10px #f8717199' : '0 0 4px #f8717133', opacity: isCurrentM ? 1 : 0.6, width: '70%' }} />
                     )}
                   </div>
                   {pl !== 0 && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 font-vt text-[8px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 font-vt text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-[#071428] px-1"
                       style={{ color: plHex(pl) }}>
                       {fmtK(pl)}
                     </div>
                   )}
-                  <div className={`font-vt text-[9px] tracking-wide mt-0.5 ${isCurrentMonth ? 'text-sky-400' : 'text-sky-400/35'}`}>
+                  <div className={`font-vt text-[9px] tracking-wide mt-1 ${isCurrentM ? 'text-sky-400' : 'text-sky-400/30'}`}>
                     {months[i]}
                   </div>
                 </div>
@@ -264,44 +285,71 @@ export default function HistoryPage() {
         </div>
         <div className="bg-[#071428] border border-sky-400/15 overflow-hidden mb-4">
           {/* Header */}
-          <div className="grid grid-cols-6 border-b border-sky-400/10">
-            {['MON', 'TUE', 'WED', 'THU', 'FRI', 'WEEK'].map((d, i) => (
-              <div key={d} className={`font-vt text-[10px] md:text-sm text-center py-1.5 tracking-widest border-r border-sky-400/8 last:border-0 ${i === 5 ? 'text-sky-400 bg-sky-400/5' : 'text-sky-400/50'}`}>{d}</div>
+          <div className="grid border-b border-sky-400/10" style={{ gridTemplateColumns: 'repeat(5,1fr) 110px' }}>
+            {['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => (
+              <div key={d} className="font-vt text-[11px] text-center py-2 tracking-widest text-sky-400/40 border-r border-sky-400/8">{d}</div>
             ))}
+            <div className="font-vt text-[11px] text-center py-2 tracking-widest text-sky-400 bg-sky-400/5">WEEK</div>
           </div>
+
           {weeks.map((week, wi) => {
             const wPL = weekPL(wi)
+            const wOrders = weekOrders(wi)
             return (
-              <div key={wi} className="grid grid-cols-6 border-b border-sky-400/8 last:border-0">
+              <div key={wi} className="grid border-b border-sky-400/8 last:border-0" style={{ gridTemplateColumns: 'repeat(5,1fr) 110px' }}>
                 {week.map((d, di) => {
-                  if (!d) return <div key={di} className="border-r border-sky-400/8 min-h-[48px] md:min-h-[64px]" />
+                  if (!d) return (
+                    <div key={di} className="border-r border-sky-400/8 min-h-[72px] bg-[#040d1a]/30" />
+                  )
                   const dk = dayKey(d)
                   const pl = byDate[dk] ? dayPL(dk) : null
+                  const orders = byDate[dk] ? dayOrders(dk) : 0
                   const today = isToday(d)
+                  const bg = cellBg(pl)
                   return (
                     <div key={di}
-                      className={`border-r border-sky-400/8 min-h-[48px] md:min-h-[64px] p-1 md:p-2 transition-all ${today ? 'ring-1 ring-sky-400/50' : ''} ${pl !== null && pl > 0 ? 'bg-green-400/5' : pl !== null && pl < 0 ? 'bg-red-400/5' : ''}`}>
-                      <div className={`font-vt text-sm flex items-center gap-0.5 ${today ? 'text-sky-400' : 'text-sky-400/50'}`}>
-                        {today && <span className="w-1 h-1 bg-sky-400 rounded-full flex-shrink-0"
-                          style={{ boxShadow: '0 0 4px #38bdf8' }} />}
-                        {d}
-                      </div>
+                      className="border-r border-sky-400/8 min-h-[72px] p-2 transition-all relative"
+                      style={{ background: bg }}>
+                      {/* Date number */}
+                      {today ? (
+                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-sky-400 mb-1">
+                          <span className="font-vt text-sm text-[#040d1a] leading-none">{d}</span>
+                        </div>
+                      ) : (
+                        <div className={`font-vt text-sm mb-1 ${pl !== null ? 'text-white/70' : 'text-sky-400/25'}`}>{d}</div>
+                      )}
+                      {/* P/L */}
                       {pl !== null && (
-                        <div className="font-vt text-[10px] md:text-sm mt-0.5"
-                          style={{ color: plHex(pl), textShadow: `0 0 6px ${plHex(pl)}44` }}>
+                        <div className="font-vt text-xs md:text-sm font-bold leading-none"
+                          style={{ color: pl >= 0 ? '#4ade80' : '#f87171' }}>
                           {fmtK(pl)}
+                        </div>
+                      )}
+                      {/* Orders */}
+                      {orders > 0 && (
+                        <div className="font-mono text-[9px] mt-1 text-white/30">
+                          {orders} orders
                         </div>
                       )}
                     </div>
                   )
                 })}
-                {/* WEEK */}
-                <div className="bg-sky-400/3 min-h-[48px] md:min-h-[64px] p-1 md:p-2 flex flex-col justify-center">
-                  <div className="font-vt text-[9px] text-sky-400/40 tracking-widest mb-0.5">Wk{wi + 1}</div>
-                  <div className="font-vt text-[11px] md:text-base"
-                    style={{ color: plHex(wPL), textShadow: `0 0 6px ${plHex(wPL)}33` }}>
-                    {wPL !== 0 ? fmtK(wPL) : '$0'}
-                  </div>
+                {/* WEEK col */}
+                <div className="min-h-[72px] p-2 flex flex-col justify-center bg-sky-400/3 border-l border-sky-400/8">
+                  <div className="font-vt text-[9px] text-sky-400/30 tracking-widest mb-1">WK{wi + 1}</div>
+                  {wPL !== 0 ? (
+                    <>
+                      <div className="font-vt text-sm leading-none"
+                        style={{ color: wPL >= 0 ? '#4ade80' : '#f87171' }}>
+                        {fmtK(wPL)}
+                      </div>
+                      {wOrders > 0 && (
+                        <div className="font-mono text-[9px] mt-1 text-white/25">{wOrders} orders</div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="font-vt text-sm text-sky-400/20">$0</div>
+                  )}
                 </div>
               </div>
             )
