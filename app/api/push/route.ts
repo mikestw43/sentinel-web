@@ -6,12 +6,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+function getUsdRate(currency: string): number {
+  if (currency === 'USC' || currency === 'USc') return 0.01
+  return 1
+}
+
 export async function POST(req: NextRequest) {
   try {
     const apiKey = req.headers.get('x-api-key')
     if (!apiKey) return NextResponse.json({ error: 'API key required' }, { status: 401 })
 
-    // Verify API key
     const { data: account, error: accErr } = await supabase
       .from('accounts')
       .select('*')
@@ -23,6 +27,8 @@ export async function POST(req: NextRequest) {
 
     const d = await req.json()
     const now = new Date().toISOString()
+    const currency = d.currency || account.currency || 'USD'
+    const usdRate = getUsdRate(currency)
 
     // Update account info
     const updateData: Record<string, unknown> = { is_online: true, last_seen: now }
@@ -34,25 +40,29 @@ export async function POST(req: NextRequest) {
 
     await supabase.from('accounts').update(updateData).eq('id', account.id)
 
-    // Calculate values
+    // Raw values (in account currency)
     const balance      = parseFloat(d.balance)      || 0
     const equity       = parseFloat(d.equity)       || 0
     const margin       = parseFloat(d.margin)       || 0
+    const free_margin  = parseFloat(d.free_margin)  || 0
+    const floating_pl  = parseFloat(d.floating_pl)  || 0
+    const today_pl     = parseFloat(d.today_pl)     || 0
+
     const drawdown_pct = balance > 0 ? Math.max(0, (balance - equity) / balance * 100) : 0
     const margin_level = margin > 0 ? equity / margin * 100 : null
 
-    // Insert snapshot
+    // Insert snapshot — store raw values (card/compact view uses these with currency label)
     await supabase.from('snapshots').insert({
       account_id:     account.id,
       captured_at:    now,
       balance,
       equity,
-      free_margin:    parseFloat(d.free_margin)    || 0,
+      free_margin,
       margin,
       margin_level,
       drawdown_pct,
-      floating_pl:    parseFloat(d.floating_pl)    || 0,
-      today_pl:       parseFloat(d.today_pl)       || 0,
+      floating_pl,
+      today_pl,
       open_orders:    parseInt(d.open_orders)      || 0,
       pending_orders: parseInt(d.pending_orders)   || 0,
       buy_lots:       parseFloat(d.buy_lots)       || 0,
@@ -87,17 +97,20 @@ export async function POST(req: NextRequest) {
           current_price: o.current_price,
           stop_loss:     o.stop_loss,
           take_profit:   o.take_profit,
-          swap:          o.swap    || 0,
+          swap:          o.swap       || 0,
           commission:    o.commission || 0,
-          profit:        o.profit  || 0,
+          profit:        o.profit     || 0,
           open_time:     o.open_time,
           comment:       o.comment
         }))
       )
     }
 
-    // Daily stats — UTC+7
+    // Daily stats — UTC+7 — store USD converted value
     const today = new Date(Date.now() + 7 * 60 * 60 * 1000).toISOString().slice(0, 10)
+    const pl_usd = today_pl * usdRate
+    const orders_count = parseInt(d.closed_orders_today) || 0
+
     const { data: existing } = await supabase
       .from('daily_stats')
       .select('id')
@@ -107,16 +120,16 @@ export async function POST(req: NextRequest) {
 
     if (existing) {
       await supabase.from('daily_stats').update({
-        pl_usd:        parseFloat(d.today_pl)          || 0,
-        orders_count:  parseInt(d.closed_orders_today) || 0,
+        pl_usd,
+        orders_count,
       }).eq('id', existing.id)
     } else {
       await supabase.from('daily_stats').insert({
-        account_id:   account.id,
-        trade_date:   today,
-        pl_usd:       parseFloat(d.today_pl)          || 0,
-        orders_count: parseInt(d.closed_orders_today) || 0,
-        currency:     d.currency || 'USD',
+        account_id:        account.id,
+        trade_date:        today,
+        pl_usd,
+        orders_count,
+        currency:          currency,
         nickname_snapshot: account.nickname,
       })
     }
