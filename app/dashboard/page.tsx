@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
@@ -22,6 +22,7 @@ export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState('portfolio')
   const router = useRouter()
   const supabase = createClient()
+  const queryClient = useQueryClient()
 
   const fetchAccounts = useCallback(async () => {
     if (!user) return []
@@ -50,6 +51,21 @@ export default function DashboardPage() {
   useEffect(() => {
     if (accountsData) setAccounts(accountsData)
   }, [accountsData])
+
+  // Supabase Realtime
+  useEffect(() => {
+    if (!user) return
+    const channel = supabase
+      .channel('dashboard-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'snapshots' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['accounts', user.id] })
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'accounts' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['accounts', user.id] })
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [user])
 
   const filtered = accounts.filter(a=>{
     if(filter==='online') return a.is_online
