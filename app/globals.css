@@ -1,10 +1,25 @@
 @import "tailwindcss";
 
+@theme {
+  --font-vt: "VT323", monospace;
+  --font-mono: "Share Tech Mono", monospace;
+
+  --color-bg-primary: #040d1a;
+  --color-bg-secondary: #071428;
+  --color-bg-card: #0a1d3a;
+  --color-accent: #38bdf8;
+  --color-success: #22c55e;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-text-primary: #e2e8f0;
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
   background: #040d1a;
   color: #e2e8f0;
+  font-family: "Share Tech Mono", monospace;
 }
 
 :root {
