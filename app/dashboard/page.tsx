@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
+import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
@@ -15,7 +16,6 @@ type Account = {
 export default function DashboardPage() {
   const { user, profile, loading: authLoading, signOut } = useAuth()
   const [accounts, setAccounts] = useState<Account[]>([])
-  const [dataLoading, setDataLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [view, setView] = useState<'card'|'compact'>('card')
   const [menuOpen, setMenuOpen] = useState(false)
@@ -23,28 +23,33 @@ export default function DashboardPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  const load = useCallback(async () => {
-    if(!user) return
-    const { data:accs } = await supabase.from('accounts').select('*').eq('user_id',user.id).eq('is_active',true)
-    if(accs){
-      const withSnap = await Promise.all(accs.map(async acc=>{
-        const { data:snap } = await supabase.from('snapshots').select('*').eq('account_id',acc.id).order('captured_at',{ascending:false}).limit(1).single()
-        return { ...acc, ...(snap||{}) }
-      }))
-      setAccounts(withSnap)
-    }
-    setDataLoading(false)
+  const fetchAccounts = useCallback(async () => {
+    if (!user) return []
+    const { data: accs } = await supabase.from('accounts').select('*').eq('user_id', user.id).eq('is_active', true)
+    if (!accs) return []
+    const withSnap = await Promise.all(accs.map(async acc => {
+      const { data: snap } = await supabase.from('snapshots').select('*').eq('account_id', acc.id).order('captured_at', { ascending: false }).limit(1).single()
+      return { ...acc, ...(snap || {}) }
+    }))
+    return withSnap
   }, [user])
 
-  useEffect(()=>{
-    if(!authLoading && !user){ router.push('/'); return }
-    if(!authLoading && profile?.status !== 'approved'){ router.push('/'); return }
-    if(user){
-      load()
-      const interval = setInterval(load, 5000)
-      return ()=>clearInterval(interval)
-    }
-  },[authLoading, user, profile, load])
+  const { data: accountsData, isLoading: dataLoading } = useQuery({
+    queryKey: ['accounts', user?.id],
+    queryFn: fetchAccounts,
+    enabled: !!user,
+    staleTime: 4000,
+    refetchInterval: 5000,
+  })
+
+  useEffect(() => {
+    if (!authLoading && !user) { router.push('/'); return }
+    if (!authLoading && profile?.status !== 'approved') { router.push('/'); return }
+  }, [authLoading, user, profile])
+
+  useEffect(() => {
+    if (accountsData) setAccounts(accountsData)
+  }, [accountsData])
 
   const filtered = accounts.filter(a=>{
     if(filter==='online') return a.is_online
