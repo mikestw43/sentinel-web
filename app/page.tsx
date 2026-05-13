@@ -33,19 +33,19 @@ export default function LoginPage() {
     <div className="fixed inset-0 bg-[#040d1a] flex items-center justify-center font-mono"
       style={{backgroundImage:'linear-gradient(rgba(56,189,248,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.04) 1px,transparent 1px)',backgroundSize:'40px 40px'}}>
 
-      {/* corners */}
-      <div className="fixed top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-sky-400"/>
-      <div className="fixed top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-sky-400"/>
-      <div className="fixed bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-sky-400"/>
-      <div className="fixed bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-sky-400"/>
+      {/* corner brackets */}
+      <div className="fixed top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-sky-400"/>
+      <div className="fixed top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-sky-400"/>
+      <div className="fixed bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-sky-400"/>
+      <div className="fixed bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-sky-400"/>
 
       <div className="w-full max-w-md px-4 z-10">
-        <div className="bg-[#071428] border border-sky-400/25 border-b-2 border-b-sky-400 p-8"
+        <div className="bg-[#071428] border border-sky-400/30 p-8"
           style={{clipPath:'polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px))'}}>
 
           {/* logo */}
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-sky-400 mb-2"
+            <div className="inline-flex items-center justify-center w-14 h-14 bg-sky-400 mb-3"
               style={{clipPath:'polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)'}}>
               <span className="font-['VT323'] text-3xl text-[#040d1a]">S</span>
             </div>
@@ -53,9 +53,9 @@ export default function LoginPage() {
             <div className="text-xs text-sky-400/40 tracking-[0.15em] mt-1">MT5 TRADING DASHBOARD</div>
           </div>
 
-          {/* status */}
-          <div className="flex items-center gap-2 bg-[#040d1a] border border-sky-400/12 px-3 py-2 mb-6 text-xs text-sky-400/60 tracking-widest">
-            <span className="w-2 h-2 bg-green-500 animate-pulse flex-shrink-0"/>
+          {/* status bar */}
+          <div className="flex items-center gap-2 bg-[#040d1a] border border-sky-400/15 px-3 py-2 mb-6 text-xs text-sky-400/70 tracking-widest">
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse flex-shrink-0"/>
             SYSTEM ONLINE — SECURE CONNECTION
           </div>
 
@@ -67,50 +67,40 @@ export default function LoginPage() {
 
           {/* username */}
           <div className="mb-4">
-            <label className="block text-xs text-sky-400/60 tracking-[0.15em] mb-1">USERNAME / EMAIL</label>
-            <div className="relative">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sky-400 text-sm">▶</span>
-              <input
-                type="text" value={username} placeholder="enter email"
-                onChange={e=>setUsername(e.target.value)}
-                onKeyDown={e=>e.key==='Enter'&&handleLogin()}
-                className="w-full bg-[#040d1a] border border-sky-400/20 text-slate-200 font-mono text-sm py-2.5 pl-7 pr-3 outline-none focus:border-sky-400 focus:bg-[#071428] placeholder:text-slate-600 transition-colors"
-                style={{clipPath:'polygon(0 0,calc(100% - 5px) 0,100% 5px,100% 100%,5px 100%,0 calc(100% - 5px))'}}
-              />
-            </div>
+            <label className="block text-xs text-sky-400/60 tracking-[0.15em] mb-1.5">USERNAME / EMAIL</label>
+            <input
+              type="text" value={username} placeholder=""
+              onChange={e=>setUsername(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&handleLogin()}
+              className="w-full bg-white border border-sky-400/30 text-[#040d1a] font-mono text-sm py-2.5 px-3 outline-none focus:border-sky-400 placeholder:text-gray-400 transition-colors"
+            />
           </div>
 
           {/* password */}
-          <div className="mb-4">
-            <label className="block text-xs text-sky-400/60 tracking-[0.15em] mb-1">PASSWORD</label>
-            <div className="relative">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sky-400 text-sm">▶</span>
-              <input
-                type="password" value={password} placeholder="••••••••"
-                onChange={e=>setPassword(e.target.value)}
-                onKeyDown={e=>e.key==='Enter'&&handleLogin()}
-                className="w-full bg-[#040d1a] border border-sky-400/20 text-slate-200 font-mono text-sm py-2.5 pl-7 pr-3 outline-none focus:border-sky-400 focus:bg-[#071428] placeholder:text-slate-600 transition-colors"
-                style={{clipPath:'polygon(0 0,calc(100% - 5px) 0,100% 5px,100% 100%,5px 100%,0 calc(100% - 5px))'}}
-              />
-            </div>
+          <div className="mb-5">
+            <label className="block text-xs text-sky-400/60 tracking-[0.15em] mb-1.5">PASSWORD</label>
+            <input
+              type="password" value={password} placeholder=""
+              onChange={e=>setPassword(e.target.value)}
+              onKeyDown={e=>e.key==='Enter'&&handleLogin()}
+              className="w-full bg-white border border-sky-400/30 text-[#040d1a] font-mono text-sm py-2.5 px-3 outline-none focus:border-sky-400 placeholder:text-gray-400 transition-colors"
+            />
           </div>
 
           {/* login btn */}
           <button onClick={handleLogin} disabled={loading}
-            className="w-full bg-sky-400 text-[#040d1a] font-['VT323'] text-2xl tracking-[0.2em] py-3 mt-1 cursor-pointer hover:bg-sky-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            style={{clipPath:'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))'}}>
+            className="w-full bg-sky-400 text-[#040d1a] font-['VT323'] text-2xl tracking-[0.2em] py-3 cursor-pointer hover:bg-sky-300 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all">
             {loading ? '[ AUTHENTICATING... ]' : '[ LOGIN ]'}
           </button>
 
           {/* divider */}
-          <div className="flex items-center gap-2.5 my-5 text-sky-400/25 text-xs tracking-widest">
+          <div className="flex items-center gap-2.5 my-5 text-sky-400/30 text-xs tracking-widest">
             <div className="flex-1 h-px bg-sky-400/15"/>OR<div className="flex-1 h-px bg-sky-400/15"/>
           </div>
 
           {/* google */}
           <button onClick={handleGoogleLogin} disabled={googleLoading}
-            className="w-full bg-white text-[#040d1a] font-['VT323'] text-xl tracking-[0.15em] py-2.5 mb-2 cursor-pointer flex items-center justify-center gap-2.5 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            style={{clipPath:'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))'}}>
+            className="w-full bg-white text-[#040d1a] font-['VT323'] text-xl tracking-[0.15em] py-2.5 mb-2 cursor-pointer flex items-center justify-center gap-2.5 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all border border-gray-200">
             <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -122,8 +112,7 @@ export default function LoginPage() {
 
           {/* register */}
           <button onClick={()=>router.push('/register')}
-            className="w-full bg-transparent border border-sky-400/30 text-sky-400 font-['VT323'] text-xl tracking-[0.15em] py-2.5 cursor-pointer hover:bg-sky-400/8 hover:border-sky-400 transition-all"
-            style={{clipPath:'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))'}}>
+            className="w-full bg-transparent border border-sky-400/30 text-sky-400 font-['VT323'] text-xl tracking-[0.15em] py-2.5 cursor-pointer hover:bg-sky-400/8 hover:border-sky-400 transition-all">
             [ REQUEST ACCESS ]
           </button>
 
