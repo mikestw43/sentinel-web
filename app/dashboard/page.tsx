@@ -97,7 +97,8 @@ export default function DashboardPage() {
   }
 
   if (authLoading) return (
-    <div className="fixed inset-0 bg-[#040d1a] flex items-center justify-center font-vt text-3xl text-sky-400 tracking-[0.2em]">
+    <div className="fixed inset-0 bg-[#040d1a] flex items-center justify-center font-vt text-3xl text-sky-400 tracking-[0.2em]"
+      style={{textShadow:'0 0 20px rgba(56,189,248,0.8)'}}>
       LOADING SENTINEL...
     </div>
   )
@@ -118,47 +119,52 @@ export default function DashboardPage() {
   return (
     <div className="bg-[#040d1a] min-h-screen pb-16 md:pb-0" onClick={() => menuOpen && setMenuOpen(false)}>
       <div className="fixed inset-0 pointer-events-none z-0"
-        style={{backgroundImage:'linear-gradient(rgba(56,189,248,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.025) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>
+        style={{backgroundImage:'linear-gradient(rgba(56,189,248,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.03) 1px,transparent 1px)',backgroundSize:'40px 40px'}}/>
 
       {/* HEADER */}
-      <header className="bg-[#071428] border-b border-sky-400/20 sticky top-0 z-50">
+      <header className="bg-[#071428] border-b border-sky-400/25 sticky top-0 z-50"
+        style={{boxShadow:'0 1px 20px rgba(56,189,248,0.08)'}}>
         <div className="max-w-[1400px] mx-auto px-4 h-[56px] flex items-center gap-3">
           <div className="flex items-center gap-2.5 flex-shrink-0">
             <div className="w-9 h-9 bg-sky-400 flex items-center justify-center font-vt text-xl text-[#040d1a]"
-              style={{clipPath:'polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)'}}>S</div>
+              style={{clipPath:'polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)', boxShadow:'0 0 12px rgba(56,189,248,0.6)'}}>S</div>
             <div>
-              <div className="font-vt text-2xl text-sky-400 tracking-[0.18em] leading-none">SENTINEL</div>
-              <div className="text-[9px] text-sky-400/40 tracking-[0.12em]">MT5 TRADING DASHBOARD</div>
+              <div className="font-vt text-2xl text-sky-400 tracking-[0.18em] leading-none"
+                style={{textShadow:'0 0 10px rgba(56,189,248,0.5)'}}>SENTINEL</div>
+              <div className="text-[9px] text-sky-400/50 tracking-[0.12em]">MT5 TRADING DASHBOARD</div>
             </div>
           </div>
           <nav className="hidden md:flex flex-1 h-[56px]">
             {navTabs.map(t => (
               <button key={t.id}
-                className={`h-[56px] px-5 font-vt text-lg tracking-widest border-b-2 cursor-pointer whitespace-nowrap transition-all ${activeTab===t.id?'text-sky-400 border-sky-400':'text-sky-400/40 border-transparent hover:text-sky-400 hover:border-sky-400/40'}`}
+                className={`h-[56px] px-5 font-vt text-lg tracking-widest border-b-2 cursor-pointer whitespace-nowrap transition-all ${activeTab===t.id?'text-sky-400 border-sky-400':'text-sky-400/50 border-transparent hover:text-sky-400 hover:border-sky-400/40'}`}
+                style={activeTab===t.id?{textShadow:'0 0 8px rgba(56,189,248,0.6)'}:{}}
                 onClick={() => handleNavClick(t.id)}>{t.label}</button>
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-2">
             {/* Bell */}
-            <button className="w-9 h-9 border border-sky-400/25 bg-[#0a1d3a] flex items-center justify-center cursor-pointer hover:border-sky-400/50 transition-colors">
+            <button className="w-9 h-9 border border-sky-400/30 bg-[#0a1d3a] flex items-center justify-center cursor-pointer hover:border-sky-400 transition-all"
+              style={{boxShadow:'0 0 8px rgba(56,189,248,0.05)'}}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
               </svg>
             </button>
             {/* User menu */}
-            <div className="relative flex items-center gap-1.5 bg-[#0a1d3a] border border-sky-400/25 px-2.5 py-1.5 cursor-pointer hover:border-sky-400/50 transition-colors"
+            <div className="relative flex items-center gap-1.5 bg-[#0a1d3a] border border-sky-400/30 px-2.5 py-1.5 cursor-pointer hover:border-sky-400/60 transition-all"
               onClick={e => { e.stopPropagation(); setMenuOpen(!menuOpen) }}>
-              <div className="w-6 h-6 bg-sky-400 rounded-full flex items-center justify-center font-vt text-sm text-[#040d1a]">
+              <div className="w-6 h-6 bg-sky-400 rounded-full flex items-center justify-center font-vt text-sm text-[#040d1a]"
+                style={{boxShadow:'0 0 8px rgba(56,189,248,0.5)'}}>
                 {profile?.username?.[0]?.toUpperCase() || 'U'}
               </div>
-              <span className="font-vt text-base text-sky-400/80 tracking-widest">{profile?.username?.toUpperCase() || 'USER'}</span>
-              <span className="text-[10px] text-sky-400/40">▼</span>
+              <span className="font-vt text-base text-sky-400 tracking-widest">{profile?.username?.toUpperCase() || 'USER'}</span>
+              <span className="text-[10px] text-sky-400/50">▼</span>
               {menuOpen && (
                 <div className="absolute top-[44px] right-0 bg-[#071428] border border-sky-400/25 min-w-[220px] z-50 shadow-2xl"
                   onClick={e => e.stopPropagation()}>
                   <div className="px-4 py-3 border-b border-sky-400/10">
-                    <div className="font-vt text-xl text-slate-200">{profile?.username?.toUpperCase()}</div>
+                    <div className="font-vt text-xl text-white">{profile?.username?.toUpperCase()}</div>
                     <div className="text-xs text-yellow-400 tracking-widest mt-0.5">● {profile?.role?.toUpperCase() || 'USER'}</div>
                   </div>
                   {[
@@ -193,8 +199,8 @@ export default function DashboardPage() {
           <style>{`@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}`}</style>
           {['XAUUSD','EURUSD','BTCUSD','GBPUSD','USDJPY','NASDAQ','SP500','XAUUSD','EURUSD','BTCUSD','GBPUSD','USDJPY','NASDAQ','SP500'].map((s,i) => (
             <span key={i} className="font-vt text-sm flex gap-2 items-center">
-              <span className="text-sky-400/70 tracking-wider">{s}</span>
-              <span className="text-slate-300">{(1800+Math.random()*600).toFixed(2)}</span>
+              <span className="text-sky-400/80 tracking-wider">{s}</span>
+              <span className="text-white">{(1800+Math.random()*600).toFixed(2)}</span>
               <span className={Math.random()>0.5?'text-green-400':'text-red-400'}>{Math.random()>0.5?'▲':'▼'}{(Math.random()*1.5).toFixed(2)}%</span>
             </span>
           ))}
@@ -205,10 +211,11 @@ export default function DashboardPage() {
         {activeTab === 'portfolio' && <>
 
           {/* PORTFOLIO OVERVIEW */}
-          <div className="font-vt text-lg tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/35 after:to-transparent">
+          <div className="font-vt text-lg tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
+            style={{textShadow:'0 0 8px rgba(56,189,248,0.4)'}}>
             PORTFOLIO OVERVIEW
           </div>
-          <div className="font-vt text-xs text-sky-400/40 tracking-[0.12em] flex items-center gap-1.5 mb-3 before:content-['◆'] before:text-[8px]">
+          <div className="font-vt text-xs text-sky-400/50 tracking-[0.12em] flex items-center gap-1.5 mb-3 before:content-['◆'] before:text-[8px]">
             ALL VALUES IN USD
           </div>
 
@@ -222,30 +229,38 @@ export default function DashboardPage() {
               { label:'OPEN LOTS', val:(totalBuyLots+totalSellLots).toFixed(2), valColor:'#38bdf8', sub:`B:${totalBuyLots.toFixed(2)} / S:${totalSellLots.toFixed(2)}`, accent:'sky' },
               { label:'PENDING', val:String(totalPending), valColor:'#fbbf24', sub:'total pending', accent:'yellow' },
             ].map((c, i) => (
-              <div key={i} className="bg-[#0a1d3a] border border-sky-400/15 px-3 py-3 relative overflow-hidden">
-                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${c.accent==='green'?'bg-green-400':c.accent==='yellow'?'bg-yellow-400':'bg-sky-400'}`}/>
-                <div className="text-[10px] text-sky-400/50 tracking-[0.12em] mb-1.5 font-mono">{c.label}</div>
-                <div className="font-vt text-2xl leading-none" style={{color:c.valColor||'#e2e8f0'}}>{c.val}</div>
-                {c.sub && <div className="text-[10px] mt-1 font-mono" style={{color:c.subColor||'rgba(56,189,248,0.4)'}}>{c.sub}</div>}
+              <div key={i} className="bg-[#0a1d3a] border border-sky-400/20 px-3 py-3 relative overflow-hidden"
+                style={{
+                  clipPath:'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))',
+                  boxShadow:'inset 0 0 20px rgba(56,189,248,0.03)'
+                }}>
+                <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${c.accent==='green'?'bg-green-400':c.accent==='yellow'?'bg-yellow-400':'bg-sky-400'}`}
+                  style={{boxShadow:c.accent==='green'?'0 0 6px #4ade80':c.accent==='yellow'?'0 0 6px #fbbf24':'0 0 6px #38bdf8'}}/>
+                <div className="text-[10px] text-sky-400/60 tracking-[0.12em] mb-1.5 font-mono">{c.label}</div>
+                <div className="font-vt text-2xl leading-none"
+                  style={{color:c.valColor||'#ffffff', textShadow:c.valColor?`0 0 8px ${c.valColor}66`:'none'}}>{c.val}</div>
+                {c.sub && <div className="text-[10px] mt-1 font-mono" style={{color:c.subColor||'rgba(56,189,248,0.5)'}}>{c.sub}</div>}
               </div>
             ))}
           </div>
 
           {/* MY ACCOUNTS header */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <div className="font-vt text-lg text-sky-400 tracking-[0.14em] flex items-center gap-1.5 before:content-['◆'] before:text-xs">MY ACCOUNTS</div>
+            <div className="font-vt text-lg text-sky-400 tracking-[0.14em] flex items-center gap-1.5 before:content-['◆'] before:text-xs"
+              style={{textShadow:'0 0 8px rgba(56,189,248,0.4)'}}>MY ACCOUNTS</div>
             <div className="flex gap-1 flex-wrap">
               {['All','Online','Offline','Profit','Loss'].map(f => (
                 <button key={f}
-                  className={`border font-vt text-sm px-3 py-0.5 cursor-pointer transition-all tracking-wider ${filter===f.toLowerCase()?'bg-sky-400/15 border-sky-400 text-sky-400':'border-sky-400/20 text-sky-400/50 hover:border-sky-400/50 hover:text-sky-400'}`}
+                  className={`border font-vt text-sm px-3 py-0.5 cursor-pointer transition-all tracking-wider ${filter===f.toLowerCase()?'bg-sky-400/15 border-sky-400 text-sky-400':'border-sky-400/25 text-sky-400/60 hover:border-sky-400/60 hover:text-sky-400'}`}
+                  style={filter===f.toLowerCase()?{boxShadow:'0 0 8px rgba(56,189,248,0.2)'}:{}}
                   onClick={() => setFilter(f.toLowerCase())}>{f}</button>
               ))}
             </div>
-            <span className="font-vt text-sm text-sky-400/50 border border-sky-400/15 px-2 py-0.5">{filtered.length}/{accounts.length}</span>
+            <span className="font-vt text-sm text-sky-400/50 border border-sky-400/20 px-2 py-0.5">{filtered.length}/{accounts.length}</span>
             <div className="flex gap-1 ml-auto">
-              <button className={`border font-vt text-sm px-2.5 py-0.5 cursor-pointer transition-all tracking-wider ${view==='card'?'border-sky-400 text-sky-400 bg-sky-400/10':'border-sky-400/20 text-sky-400/40 hover:border-sky-400'}`}
+              <button className={`border font-vt text-sm px-2.5 py-0.5 cursor-pointer transition-all tracking-wider ${view==='card'?'border-sky-400 text-sky-400 bg-sky-400/10':'border-sky-400/25 text-sky-400/50 hover:border-sky-400'}`}
                 onClick={() => setView('card')}>⊞ CARD</button>
-              <button className={`border font-vt text-sm px-2.5 py-0.5 cursor-pointer transition-all tracking-wider ${view==='compact'?'border-sky-400 text-sky-400 bg-sky-400/10':'border-sky-400/20 text-sky-400/40 hover:border-sky-400'}`}
+              <button className={`border font-vt text-sm px-2.5 py-0.5 cursor-pointer transition-all tracking-wider ${view==='compact'?'border-sky-400 text-sky-400 bg-sky-400/10':'border-sky-400/25 text-sky-400/50 hover:border-sky-400'}`}
                 onClick={() => setView('compact')}>≡ COMPACT</button>
             </div>
           </div>
@@ -260,22 +275,33 @@ export default function DashboardPage() {
                 const bal = acc.balance||0, eq = acc.equity||0
                 const eqPct = bal>0?Math.min(100, eq/bal*100):100
                 const eqBarColor = offline?'bg-red-400':dd>=30?'bg-red-400':dd>=10?'bg-yellow-400':'bg-green-400'
+                const eqGlow = offline?'#f87171':dd>=30?'#f87171':dd>=10?'#fbbf24':'#4ade80'
                 const ml = acc.margin_level||0
                 const mlColor = ml>0&&ml<150?'text-red-400':ml<300?'text-yellow-400':'text-green-400'
                 const todayColor = (acc.today_pl||0)>=0?'text-green-400':'text-red-400'
+                const todayGlow = (acc.today_pl||0)>=0?'#4ade80':'#f87171'
                 const floatColor = (acc.floating_pl||0)>=0?'text-green-400':'text-red-400'
+                const floatGlow = (acc.floating_pl||0)>=0?'#4ade80':'#f87171'
                 const eqColor = eq>bal?'text-green-400':eq===bal?'text-sky-400':'text-red-400'
                 return (
-                  <div key={acc.id} className={`bg-[#0a1d3a] border border-sky-400/20 border-l-2 p-4 transition-all hover:border-sky-400/40 ${offline?'border-l-red-400 opacity-70':'border-l-sky-400'}`}>
+                  <div key={acc.id}
+                    className={`bg-[#0a1d3a] border border-sky-400/20 border-l-2 p-4 transition-all hover:border-sky-400/50 ${offline?'border-l-red-400 opacity-70':'border-l-sky-400'}`}
+                    style={{
+                      clipPath:'polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px))',
+                      boxShadow: offline?'inset 0 0 30px rgba(248,113,113,0.04)':'inset 0 0 30px rgba(56,189,248,0.04)'
+                    }}>
+
                     {/* Card header */}
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-start gap-2">
-                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${offline?'bg-red-400':'bg-green-400 animate-pulse'}`}/>
+                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${offline?'bg-red-400':'bg-green-400 animate-pulse'}`}
+                          style={{boxShadow: offline?'0 0 6px #f87171':'0 0 6px #4ade80'}}/>
                         <div>
-                          <div className={`font-vt text-2xl tracking-wide leading-none ${offline?'text-red-400':'text-slate-100'}`}>{acc.nickname}</div>
-                          <div className="text-[11px] text-sky-400/40 mt-0.5 flex items-center gap-1.5 font-mono">
+                          <div className={`font-vt text-2xl tracking-wide leading-none ${offline?'text-red-400':'text-white'}`}
+                            style={!offline?{textShadow:'0 0 8px rgba(255,255,255,0.2)'}:{}}>{acc.nickname}</div>
+                          <div className="text-[11px] text-sky-400/50 mt-0.5 flex items-center gap-1.5 font-mono">
                             #{acc.account_number||'—'}
-                            <span className="px-1 border border-sky-400/25 text-sky-400/60 text-[10px]">{acc.currency||'USD'}</span>
+                            <span className="px-1 border border-sky-400/30 text-sky-400/70 text-[10px]">{acc.currency||'USD'}</span>
                           </div>
                         </div>
                       </div>
@@ -286,7 +312,8 @@ export default function DashboardPage() {
 
                     {/* equity bar */}
                     <div className="h-[3px] bg-sky-400/8 mb-3">
-                      <div className={`h-full transition-all ${eqBarColor}`} style={{width:eqPct.toFixed(0)+'%'}}/>
+                      <div className={`h-full transition-all ${eqBarColor}`}
+                        style={{width:eqPct.toFixed(0)+'%', boxShadow:`0 0 6px ${eqGlow}`}}/>
                     </div>
 
                     {offline && <div className="font-vt text-sm text-red-400 bg-red-400/8 border border-red-400/20 px-2.5 py-1 mb-3">⚠ OFFLINE</div>}
@@ -294,14 +321,14 @@ export default function DashboardPage() {
                     {/* stats grid */}
                     <div className="grid grid-cols-3 gap-2 mb-3">
                       {[
-                        {label:'Balance', val:fmt(bal), cls:'text-slate-200'},
+                        {label:'Balance', val:fmt(bal), cls:'text-white'},
                         {label:'Equity', val:fmt(eq), cls:eqColor},
-                        {label:'Orders', val:`${acc.open_orders||0} open`, cls:(acc.open_orders||0)>0?'text-yellow-400':'text-slate-200'},
+                        {label:'Orders', val:`${acc.open_orders||0} open`, cls:(acc.open_orders||0)>0?'text-yellow-400':'text-white'},
                         {label:'Margin', val:fmt(acc.margin||0), cls:mlColor},
                         {label:'Margin Lvl', val:ml>0?fmt(ml,0)+'%':'—', cls:mlColor},
                       ].map((s, i) => (
                         <div key={i}>
-                          <div className="text-[10px] text-sky-400/40 tracking-wide mb-0.5 font-mono">{s.label}</div>
+                          <div className="text-[10px] text-sky-400/60 tracking-wide mb-0.5 font-mono">{s.label}</div>
                           <div className={`font-vt text-lg leading-none ${s.cls}`}>{s.val}</div>
                         </div>
                       ))}
@@ -310,30 +337,35 @@ export default function DashboardPage() {
                     {/* TODAY / FLOATING */}
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       <div className="bg-[#071428] border border-sky-400/10 px-3 py-2">
-                        <div className="text-[10px] text-sky-400/40 tracking-widest mb-1 font-mono">TODAY</div>
-                        <div className={`font-vt text-xl ${todayColor}`}>{fmtPL(acc.today_pl||0)}</div>
+                        <div className="text-[10px] text-sky-400/60 tracking-widest mb-1 font-mono">TODAY</div>
+                        <div className={`font-vt text-xl ${todayColor}`}
+                          style={{textShadow:`0 0 8px ${todayGlow}66`}}>{fmtPL(acc.today_pl||0)}</div>
                       </div>
                       <div className="bg-[#071428] border border-sky-400/10 px-3 py-2">
-                        <div className="text-[10px] text-sky-400/40 tracking-widest mb-1 font-mono">FLOATING P/L</div>
-                        <div className={`font-vt text-xl ${floatColor}`}>{fmtPL(acc.floating_pl||0)}</div>
+                        <div className="text-[10px] text-sky-400/60 tracking-widest mb-1 font-mono">FLOATING P/L</div>
+                        <div className={`font-vt text-xl ${floatColor}`}
+                          style={{textShadow:`0 0 8px ${floatGlow}66`}}>{fmtPL(acc.floating_pl||0)}</div>
                       </div>
                     </div>
 
                     {/* LOT EXPOSURE */}
-                    <div className="flex items-center gap-2 mb-3 text-[10px] text-sky-400/40 tracking-widest font-mono">
+                    <div className="flex items-center gap-2 mb-3 text-[10px] text-sky-400/60 tracking-widest font-mono">
                       LOT EXPOSURE
-                      <span className="font-vt text-sm text-green-400 border border-green-400/30 px-2 py-0.5">B:{fmt(acc.buy_lots||0)}</span>
-                      <span className="font-vt text-sm text-red-400 border border-red-400/30 px-2 py-0.5">S:{fmt(acc.sell_lots||0)}</span>
+                      <span className="font-vt text-sm text-green-400 border border-green-400/40 px-2 py-0.5"
+                        style={{boxShadow:'0 0 6px rgba(74,222,128,0.15)'}}>B:{fmt(acc.buy_lots||0)}</span>
+                      <span className="font-vt text-sm text-red-400 border border-red-400/40 px-2 py-0.5"
+                        style={{boxShadow:'0 0 6px rgba(248,113,113,0.15)'}}>S:{fmt(acc.sell_lots||0)}</span>
                     </div>
 
                     {acc.broker_name && (
-                      <div className="text-[11px] text-sky-400/35 tracking-wide mb-3 flex items-center gap-1 font-mono before:content-['◆'] before:text-[8px]">
+                      <div className="text-[11px] text-sky-400/50 tracking-wide mb-3 flex items-center gap-1 font-mono before:content-['◆'] before:text-[8px]">
                         {acc.broker_name}
                       </div>
                     )}
 
                     <button onClick={() => router.push(`/orders?account=${acc.id}`)}
-                      className="font-vt text-sm tracking-widest px-4 py-1.5 border border-sky-400/25 text-sky-400/60 hover:border-sky-400 hover:text-sky-400 transition-all cursor-pointer bg-transparent">
+                      className="font-vt text-sm tracking-widest px-4 py-1.5 border border-sky-400/30 text-sky-400/70 hover:border-sky-400 hover:text-sky-400 transition-all cursor-pointer bg-transparent"
+                      style={{clipPath:'polygon(0 0,calc(100% - 5px) 0,100% 5px,100% 100%,5px 100%,0 calc(100% - 5px))'}}>
                       ORDERS
                     </button>
                   </div>
@@ -345,19 +377,20 @@ export default function DashboardPage() {
           {/* COMPACT VIEW */}
           {view === 'compact' && (
             <div className="mb-4">
-              <div className="hidden md:grid grid-cols-[16px_180px_1fr_110px_100px_120px] gap-2.5 bg-sky-400/5 border-b border-sky-400/15 font-vt text-sm tracking-widest text-sky-400/50 px-4 py-2">
+              <div className="hidden md:grid grid-cols-[16px_180px_1fr_110px_100px_120px] gap-2.5 bg-sky-400/5 border-b border-sky-400/15 font-vt text-sm tracking-widest text-sky-400/60 px-4 py-2">
                 <span/><span>ACCOUNT</span><span>BALANCE</span><span>TODAY P/L</span><span>FLOATING</span><span>DD</span>
               </div>
               {filtered.map(acc => {
                 const offline = isOffline(acc)
                 return (
-                  <div key={acc.id} className={`flex md:grid md:grid-cols-[16px_180px_1fr_110px_100px_120px] gap-2.5 items-center bg-[#0a1d3a] border border-sky-400/10 border-l-2 px-4 py-2.5 mb-1 cursor-pointer hover:border-sky-400/30 transition-all ${offline?'border-l-red-400 opacity-60':'border-l-sky-400'}`}>
-                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${offline?'bg-red-400':'bg-green-400 animate-pulse'}`}/>
+                  <div key={acc.id} className={`flex md:grid md:grid-cols-[16px_180px_1fr_110px_100px_120px] gap-2.5 items-center bg-[#0a1d3a] border border-sky-400/15 border-l-2 px-4 py-2.5 mb-1 cursor-pointer hover:border-sky-400/40 transition-all ${offline?'border-l-red-400 opacity-60':'border-l-sky-400'}`}>
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${offline?'bg-red-400':'bg-green-400 animate-pulse'}`}
+                      style={{boxShadow: offline?'0 0 6px #f87171':'0 0 6px #4ade80'}}/>
                     <div>
-                      <div className="font-vt text-lg text-slate-200">{acc.nickname}</div>
-                      <div className="text-[10px] text-sky-400/40 font-mono">{fmt(acc.balance||0)} {acc.currency||'USD'}</div>
+                      <div className="font-vt text-lg text-white">{acc.nickname}</div>
+                      <div className="text-[10px] text-sky-400/50 font-mono">{fmt(acc.balance||0)} {acc.currency||'USD'}</div>
                     </div>
-                    <div className="font-vt text-base text-sky-400/60">{fmt(acc.balance||0)}</div>
+                    <div className="font-vt text-base text-sky-400/70">{fmt(acc.balance||0)}</div>
                     <div className={`font-vt text-base ${plColor(acc.today_pl||0)}`}>{fmtPL(acc.today_pl||0)}</div>
                     <div className={`font-vt text-base ${plColor(acc.floating_pl||0)}`}>{fmtPL(acc.floating_pl||0)}</div>
                     <div className="font-vt text-sm" style={{color:ddColor(acc.drawdown_pct||0)}}>DD {(acc.drawdown_pct||0).toFixed(2)}%</div>
@@ -376,7 +409,8 @@ export default function DashboardPage() {
       </div>
 
       {/* MOBILE NAV */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-[#071428] border-t border-sky-400/15 flex md:hidden z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#071428] border-t border-sky-400/20 flex md:hidden z-50"
+        style={{boxShadow:'0 -1px 20px rgba(56,189,248,0.08)'}}>
         {mobTabs.map(t => (
           <button key={t.id} className="flex-1 py-2 pb-2.5 text-center bg-transparent border-none cursor-pointer"
             onClick={() => handleNavClick(t.id)}>
