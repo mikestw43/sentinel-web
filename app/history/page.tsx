@@ -117,11 +117,11 @@ export default function HistoryPage() {
       {/* HEADER */}
       <header className="bg-[#071428] border-b border-sky-400/20 sticky top-0 z-50"
         style={{ boxShadow: '0 1px 20px rgba(56,189,248,0.08)' }}>
-        <div className="max-w-[1400px] mx-auto px-4 h-[56px] flex items-center gap-3">
-          <div className="flex items-center gap-2.5 flex-shrink-0">
-            <div className="w-9 h-9 bg-sky-400 flex items-center justify-center font-vt text-xl text-[#040d1a]"
+        <div className="max-w-[1400px] mx-auto px-3 h-[56px] flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="w-8 h-8 bg-sky-400 flex items-center justify-center font-vt text-lg text-[#040d1a]"
               style={{ clipPath: 'polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)', boxShadow: '0 0 12px rgba(56,189,248,0.6)' }}>S</div>
-            <div className="font-vt text-2xl text-sky-400 tracking-[0.18em]"
+            <div className="font-vt text-xl text-sky-400 tracking-[0.18em]"
               style={{ textShadow: '0 0 10px rgba(56,189,248,0.5)' }}>SENTINEL</div>
           </div>
           <nav className="hidden md:flex flex-1 h-[56px]">
@@ -132,7 +132,7 @@ export default function HistoryPage() {
               { id: 'performance', label: 'PERFORMANCE' },
             ].map(t => (
               <button key={t.id}
-                className={`h-[56px] px-5 font-vt text-lg tracking-widest border-b-2 cursor-pointer whitespace-nowrap transition-all ${t.id === 'performance' ? 'text-sky-400 border-sky-400' : 'text-sky-400/50 border-transparent hover:text-sky-400'}`}
+                className={`h-[56px] px-4 font-vt text-base tracking-widest border-b-2 cursor-pointer whitespace-nowrap transition-all ${t.id === 'performance' ? 'text-sky-400 border-sky-400' : 'text-sky-400/50 border-transparent hover:text-sky-400'}`}
                 style={t.id === 'performance' ? { textShadow: '0 0 8px rgba(56,189,248,0.6)' } : {}}
                 onClick={() => t.id !== 'performance' && router.push('/dashboard')}>
                 {t.label}
@@ -140,7 +140,7 @@ export default function HistoryPage() {
             ))}
           </nav>
           <div className="ml-auto">
-            <select className="bg-[#0a1d3a] border border-sky-400/25 text-sky-400 font-vt text-sm px-2.5 py-1.5 cursor-pointer outline-none"
+            <select className="bg-[#0a1d3a] border border-sky-400/25 text-sky-400 font-vt text-sm px-2 py-1.5 cursor-pointer outline-none max-w-[140px]"
               value={selectedAccount} onChange={e => setSelectedAccount(e.target.value)}>
               <option value="all">ALL ACCOUNTS</option>
               {accounts.map(a => <option key={a.id} value={a.id}>{a.nickname}</option>)}
@@ -149,111 +149,106 @@ export default function HistoryPage() {
         </div>
       </header>
 
-      <div className="max-w-[1400px] mx-auto px-4 pt-4 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-3 pt-3 relative z-10">
 
         {/* PERFORMANCE TITLE */}
-        <div className="font-vt text-lg tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-3 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
+        <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-3 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           PERFORMANCE
         </div>
 
         {/* MONTHLY P/L BIG */}
-        <div className="bg-[#071428] border border-sky-400/20 p-6 mb-4 text-center relative overflow-hidden"
+        <div className="bg-[#071428] border border-sky-400/20 px-4 py-4 mb-3 text-center relative overflow-hidden"
           style={{ boxShadow: 'inset 0 0 40px rgba(56,189,248,0.03)' }}>
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ backgroundImage: 'linear-gradient(rgba(56,189,248,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.02) 1px,transparent 1px)', backgroundSize: '20px 20px' }} />
-          <div className="font-vt text-base text-sky-400/60 tracking-[0.2em] mb-2">{fmtMonthLabel(currentMonth)}</div>
-          <div className="font-vt text-5xl mb-5"
+          <div className="font-vt text-sm text-sky-400/60 tracking-[0.2em] mb-1">{fmtMonthLabel(currentMonth)}</div>
+          <div className="font-vt text-4xl md:text-5xl mb-3"
             style={{ color: plHex(monthPL), textShadow: `0 0 20px ${plHex(monthPL)}66` }}>
             {fmtPL(monthPL)}
           </div>
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-2">
             <button onClick={prevMonth}
-              className="font-vt text-base text-sky-400/60 border border-sky-400/20 px-3 py-1 hover:text-sky-400 hover:border-sky-400 transition-all cursor-pointer bg-transparent flex items-center gap-1">
+              className="font-vt text-sm text-sky-400/60 border border-sky-400/20 px-2.5 py-1 hover:text-sky-400 hover:border-sky-400 transition-all cursor-pointer bg-transparent">
               ◄ PREV
             </button>
-            <span className="font-vt text-lg text-sky-400 tracking-widest px-4"
+            <span className="font-vt text-base text-sky-400 tracking-widest px-2"
               style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
               {fmtMonthLabel(currentMonth)}
             </span>
             <button onClick={nextMonth}
-              className="font-vt text-base text-sky-400/60 border border-sky-400/20 px-3 py-1 hover:text-sky-400 hover:border-sky-400 transition-all cursor-pointer bg-transparent flex items-center gap-1">
+              className="font-vt text-sm text-sky-400/60 border border-sky-400/20 px-2.5 py-1 hover:text-sky-400 hover:border-sky-400 transition-all cursor-pointer bg-transparent">
               NEXT ►
             </button>
           </div>
         </div>
 
         {/* MONTHLY STATS */}
-        <div className="font-vt text-lg tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-3 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
+        <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           MONTHLY STATS
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
           {[
             { label: 'BEST DAY', val: bestDay ? fmtPL(dayPL(bestDay)) : '+$0.00', sub: bestDay ? fmtDayShort(bestDay) : '—', color: '#4ade80', accent: 'bg-green-400' },
             { label: 'WORST DAY', val: worstDay ? fmtPL(dayPL(worstDay)) : '-$0.00', sub: worstDay ? fmtDayShort(worstDay) : '—', color: '#f87171', accent: 'bg-red-400' },
             { label: 'WIN DAYS', val: String(monthWinDays.length), sub: `of ${monthDates.length} days`, color: '#4ade80', accent: 'bg-green-400' },
             { label: 'AVG DAILY', val: fmtPL(avgDaily), sub: 'USD equiv', color: plHex(avgDaily), accent: avgDaily >= 0 ? 'bg-green-400' : 'bg-red-400' },
           ].map((c, i) => (
-            <div key={i} className="bg-[#071428] border border-sky-400/15 px-4 py-3 relative overflow-hidden"
+            <div key={i} className="bg-[#071428] border border-sky-400/15 px-3 py-2.5 relative overflow-hidden"
               style={{ clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))' }}>
               <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${c.accent}`}
                 style={{ boxShadow: `0 0 6px ${c.color}` }} />
-              <div className="text-[10px] text-sky-400/60 tracking-[0.12em] mb-1 font-mono">{c.label}</div>
-              <div className="font-vt text-2xl" style={{ color: c.color, textShadow: `0 0 8px ${c.color}66` }}>{c.val}</div>
+              <div className="text-[10px] text-sky-400/60 tracking-[0.12em] mb-0.5 font-mono">{c.label}</div>
+              <div className="font-vt text-xl md:text-2xl" style={{ color: c.color, textShadow: `0 0 8px ${c.color}66` }}>{c.val}</div>
               <div className="text-[10px] text-sky-400/40 mt-0.5 font-mono">{c.sub}</div>
             </div>
           ))}
         </div>
 
         {/* MONTHLY BAR CHART */}
-        <div className="font-vt text-lg tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-3 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
+        <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           MONTHLY P/L {year} (USD)
         </div>
-        <div className="bg-[#071428] border border-sky-400/15 px-4 pt-6 pb-3 mb-4">
-          <div className="flex items-center gap-1 h-28 relative">
+        <div className="bg-[#071428] border border-sky-400/15 px-3 pt-5 pb-2 mb-3">
+          <div className="flex items-center gap-0.5 h-24 relative">
             <div className="absolute left-0 right-0 top-1/2 h-px bg-sky-400/15" />
             {monthlyPL.map((pl, i) => {
-              const pct = Math.abs(pl) / maxMonthly * 48
+              const pct = Math.abs(pl) / maxMonthly * 44
               const isCurrentMonth = i === month
               return (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1 h-full relative group">
+                <div key={i} className="flex-1 flex flex-col items-center gap-0.5 h-full relative group">
                   <div className="flex-1 flex flex-col justify-end w-full">
                     {pl > 0 && (
-                      <div className="w-full mx-auto transition-all"
+                      <div className="transition-all mx-auto"
                         style={{
                           height: `${pct}px`,
                           background: '#4ade80',
                           boxShadow: isCurrentMonth ? '0 0 10px #4ade8099' : '0 0 4px #4ade8033',
                           opacity: isCurrentMonth ? 1 : 0.65,
-                          maxWidth: '80%',
-                          margin: '0 auto'
+                          width: '70%',
                         }} />
                     )}
                   </div>
                   <div className="h-px w-full bg-sky-400/15" />
                   <div className="flex-1 flex flex-col justify-start w-full">
                     {pl < 0 && (
-                      <div className="w-full mx-auto transition-all"
+                      <div className="transition-all mx-auto"
                         style={{
                           height: `${pct}px`,
                           background: '#f87171',
                           boxShadow: isCurrentMonth ? '0 0 10px #f8717199' : '0 0 4px #f8717133',
                           opacity: isCurrentMonth ? 1 : 0.65,
-                          maxWidth: '80%',
-                          margin: '0 auto'
+                          width: '70%',
                         }} />
                     )}
                   </div>
-                  {/* hover label */}
                   {pl !== 0 && (
-                    <div className="absolute -top-5 left-1/2 -translate-x-1/2 font-vt text-[9px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 font-vt text-[8px] whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
                       style={{ color: plHex(pl) }}>
                       {fmtK(pl)}
                     </div>
                   )}
-                  <div className={`font-vt text-[10px] tracking-wide mt-1 ${isCurrentMonth ? 'text-sky-400' : 'text-sky-400/35'}`}>
+                  <div className={`font-vt text-[9px] tracking-wide mt-0.5 ${isCurrentMonth ? 'text-sky-400' : 'text-sky-400/35'}`}>
                     {months[i]}
                   </div>
                 </div>
@@ -263,7 +258,7 @@ export default function HistoryPage() {
         </div>
 
         {/* DAILY CALENDAR */}
-        <div className="font-vt text-lg tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-3 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
+        <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           DAILY P/L CALENDAR (USD)
         </div>
@@ -271,7 +266,7 @@ export default function HistoryPage() {
           {/* Header */}
           <div className="grid grid-cols-6 border-b border-sky-400/10">
             {['MON', 'TUE', 'WED', 'THU', 'FRI', 'WEEK'].map((d, i) => (
-              <div key={d} className={`font-vt text-sm text-center py-2 tracking-widest border-r border-sky-400/8 last:border-0 ${i === 5 ? 'text-sky-400 bg-sky-400/5' : 'text-sky-400/50'}`}>{d}</div>
+              <div key={d} className={`font-vt text-[10px] md:text-sm text-center py-1.5 tracking-widest border-r border-sky-400/8 last:border-0 ${i === 5 ? 'text-sky-400 bg-sky-400/5' : 'text-sky-400/50'}`}>{d}</div>
             ))}
           </div>
           {weeks.map((week, wi) => {
@@ -279,20 +274,20 @@ export default function HistoryPage() {
             return (
               <div key={wi} className="grid grid-cols-6 border-b border-sky-400/8 last:border-0">
                 {week.map((d, di) => {
-                  if (!d) return <div key={di} className="border-r border-sky-400/8 min-h-[64px]" />
+                  if (!d) return <div key={di} className="border-r border-sky-400/8 min-h-[48px] md:min-h-[64px]" />
                   const dk = dayKey(d)
                   const pl = byDate[dk] ? dayPL(dk) : null
                   const today = isToday(d)
                   return (
                     <div key={di}
-                      className={`border-r border-sky-400/8 min-h-[64px] p-2 transition-all ${today ? 'ring-1 ring-sky-400/50' : ''} ${pl !== null && pl > 0 ? 'bg-green-400/5' : pl !== null && pl < 0 ? 'bg-red-400/5' : ''}`}>
-                      <div className={`font-vt text-base flex items-center gap-1 ${today ? 'text-sky-400' : 'text-sky-400/50'}`}>
-                        {today && <span className="w-1.5 h-1.5 bg-sky-400 rounded-full"
+                      className={`border-r border-sky-400/8 min-h-[48px] md:min-h-[64px] p-1 md:p-2 transition-all ${today ? 'ring-1 ring-sky-400/50' : ''} ${pl !== null && pl > 0 ? 'bg-green-400/5' : pl !== null && pl < 0 ? 'bg-red-400/5' : ''}`}>
+                      <div className={`font-vt text-sm flex items-center gap-0.5 ${today ? 'text-sky-400' : 'text-sky-400/50'}`}>
+                        {today && <span className="w-1 h-1 bg-sky-400 rounded-full flex-shrink-0"
                           style={{ boxShadow: '0 0 4px #38bdf8' }} />}
                         {d}
                       </div>
                       {pl !== null && (
-                        <div className="font-vt text-sm mt-1"
+                        <div className="font-vt text-[10px] md:text-sm mt-0.5"
                           style={{ color: plHex(pl), textShadow: `0 0 6px ${plHex(pl)}44` }}>
                           {fmtK(pl)}
                         </div>
@@ -301,9 +296,9 @@ export default function HistoryPage() {
                   )
                 })}
                 {/* WEEK */}
-                <div className="bg-sky-400/3 min-h-[64px] p-2 flex flex-col justify-center">
-                  <div className="font-vt text-[10px] text-sky-400/40 tracking-widest mb-0.5">Week {wi + 1}</div>
-                  <div className="font-vt text-base"
+                <div className="bg-sky-400/3 min-h-[48px] md:min-h-[64px] p-1 md:p-2 flex flex-col justify-center">
+                  <div className="font-vt text-[9px] text-sky-400/40 tracking-widest mb-0.5">Wk{wi + 1}</div>
+                  <div className="font-vt text-[11px] md:text-base"
                     style={{ color: plHex(wPL), textShadow: `0 0 6px ${plHex(wPL)}33` }}>
                     {wPL !== 0 ? fmtK(wPL) : '$0'}
                   </div>
