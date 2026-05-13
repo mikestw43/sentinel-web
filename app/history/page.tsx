@@ -77,7 +77,6 @@ export default function HistoryPage() {
   const weeks: (number | null)[][] = []
   for (let i = 0; i < calDays.length; i += 5) weeks.push(calDays.slice(i, i + 5))
 
-  // max abs PL in month for intensity
   const maxDayPL = Math.max(...monthDates.map(d => Math.abs(dayPL(d))), 1)
 
   function fmt(n: number, d = 2) { return (n || 0).toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }) }
@@ -118,16 +117,25 @@ export default function HistoryPage() {
     return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
   }
   function cellBg(pl: number | null): string {
-    if (pl === null) return 'transparent'
-    if (pl === 0) return 'transparent'
+    if (pl === null || pl === 0) return '#0a1528'
     const intensity = Math.min(Math.abs(pl) / maxDayPL, 1)
     if (pl > 0) {
-      const alpha = Math.round(intensity * 180).toString(16).padStart(2, '0')
-      return `#0f3d1f${alpha}`
+      const r = Math.round(10 + intensity * 5)
+      const g = Math.round(30 + intensity * 45)
+      const b = Math.round(20 + intensity * 15)
+      return `rgb(${r},${g},${b})`
     } else {
-      const alpha = Math.round(intensity * 180).toString(16).padStart(2, '0')
-      return `#3d0f0f${alpha}`
+      const r = Math.round(35 + intensity * 50)
+      const g = Math.round(10 + intensity * 5)
+      const b = Math.round(10 + intensity * 5)
+      return `rgb(${r},${g},${b})`
     }
+  }
+  function cellBorder(pl: number | null): string {
+    if (pl === null || pl === 0) return 'rgba(56,189,248,0.06)'
+    const intensity = Math.min(Math.abs(pl) / maxDayPL, 1)
+    if (pl > 0) return `rgba(74,222,128,${0.1 + intensity * 0.3})`
+    return `rgba(248,113,113,${0.1 + intensity * 0.3})`
   }
 
   if (authLoading || dataLoading) return (
@@ -198,21 +206,22 @@ export default function HistoryPage() {
               style={{ color: plHex(monthPL), textShadow: `0 0 24px ${plHex(monthPL)}55` }}>
               {fmtPL(monthPL)}
             </div>
-            <div className="font-mono text-xs text-sky-400/40 mb-4 z-10">{monthOrders} orders this month</div>
-            <div className="flex items-center gap-2 z-10">
+            <div className="font-mono text-xs text-sky-400/40 mb-5 z-10">{monthOrders} orders this month</div>
+            {/* Navigation — ref style */}
+            <div className="flex items-center gap-3 z-10">
               <button onClick={prevMonth}
-                className="font-vt text-xs text-sky-400/50 border border-sky-400/15 px-3 py-1.5 hover:text-sky-400 hover:border-sky-400/50 transition-all cursor-pointer bg-transparent">
-                ◄ PREV
+                className="w-8 h-8 flex items-center justify-center border border-sky-400/20 text-sky-400/50 hover:text-sky-400 hover:border-sky-400/50 transition-all cursor-pointer bg-transparent font-vt text-base">
+                ‹
               </button>
               {!isCurrentMonth() && (
                 <button onClick={goToday}
-                  className="font-vt text-xs text-sky-400 border border-sky-400/40 px-3 py-1.5 hover:bg-sky-400/10 transition-all cursor-pointer bg-transparent">
+                  className="font-vt text-xs text-sky-400 border border-sky-400/50 px-4 py-1.5 hover:bg-sky-400/15 transition-all cursor-pointer bg-transparent tracking-widest">
                   TODAY
                 </button>
               )}
               <button onClick={nextMonth}
-                className="font-vt text-xs text-sky-400/50 border border-sky-400/15 px-3 py-1.5 hover:text-sky-400 hover:border-sky-400/50 transition-all cursor-pointer bg-transparent">
-                NEXT ►
+                className="w-8 h-8 flex items-center justify-center border border-sky-400/20 text-sky-400/50 hover:text-sky-400 hover:border-sky-400/50 transition-all cursor-pointer bg-transparent font-vt text-base">
+                ›
               </button>
             </div>
           </div>
@@ -283,72 +292,71 @@ export default function HistoryPage() {
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           DAILY P/L CALENDAR (USD)
         </div>
+
         <div className="bg-[#071428] border border-sky-400/15 overflow-hidden mb-4">
           {/* Header */}
-          <div className="grid border-b border-sky-400/10" style={{ gridTemplateColumns: 'repeat(5,1fr) 110px' }}>
+          <div className="grid border-b border-sky-400/10" style={{ gridTemplateColumns: 'repeat(5,1fr) 100px' }}>
             {['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => (
-              <div key={d} className="font-vt text-[11px] text-center py-2 tracking-widest text-sky-400/40 border-r border-sky-400/8">{d}</div>
+              <div key={d} className="font-vt text-[11px] text-center py-2.5 tracking-widest text-sky-400/40 border-r border-sky-400/8">{d}</div>
             ))}
-            <div className="font-vt text-[11px] text-center py-2 tracking-widest text-sky-400 bg-sky-400/5">WEEK</div>
+            <div className="font-vt text-[11px] text-center py-2.5 tracking-widest text-sky-400/60 bg-sky-400/5">TOTAL</div>
           </div>
 
           {weeks.map((week, wi) => {
             const wPL = weekPL(wi)
             const wOrders = weekOrders(wi)
             return (
-              <div key={wi} className="grid border-b border-sky-400/8 last:border-0" style={{ gridTemplateColumns: 'repeat(5,1fr) 110px' }}>
+              <div key={wi} className="grid border-b border-sky-400/8 last:border-0" style={{ gridTemplateColumns: 'repeat(5,1fr) 100px' }}>
                 {week.map((d, di) => {
                   if (!d) return (
-                    <div key={di} className="border-r border-sky-400/8 min-h-[72px] bg-[#040d1a]/30" />
+                    <div key={di} className="border-r min-h-[80px]"
+                      style={{ background: '#06101e', borderColor: 'rgba(56,189,248,0.05)' }} />
                   )
                   const dk = dayKey(d)
                   const pl = byDate[dk] ? dayPL(dk) : null
                   const orders = byDate[dk] ? dayOrders(dk) : 0
                   const today = isToday(d)
                   const bg = cellBg(pl)
+                  const border = cellBorder(pl)
                   return (
                     <div key={di}
-                      className="border-r border-sky-400/8 min-h-[72px] p-2 transition-all relative"
-                      style={{ background: bg }}>
-                      {/* Date number */}
+                      className="border-r min-h-[80px] p-2.5 transition-all relative flex flex-col"
+                      style={{ background: bg, borderColor: border }}>
+                      {/* Date */}
                       {today ? (
-                        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-sky-400 mb-1">
-                          <span className="font-vt text-sm text-[#040d1a] leading-none">{d}</span>
+                        <div className="w-7 h-7 rounded-full bg-sky-400 flex items-center justify-center mb-1.5 flex-shrink-0"
+                          style={{ boxShadow: '0 0 10px rgba(56,189,248,0.6)' }}>
+                          <span className="font-vt text-sm text-[#040d1a] leading-none font-bold">{d}</span>
                         </div>
                       ) : (
-                        <div className={`font-vt text-sm mb-1 ${pl !== null ? 'text-white/70' : 'text-sky-400/25'}`}>{d}</div>
+                        <div className={`font-vt text-sm mb-1.5 leading-none ${pl !== null ? pl > 0 ? 'text-green-300/60' : 'text-red-300/60' : 'text-sky-400/20'}`}>{d}</div>
                       )}
                       {/* P/L */}
                       {pl !== null && (
-                        <div className="font-vt text-xs md:text-sm font-bold leading-none"
-                          style={{ color: pl >= 0 ? '#4ade80' : '#f87171' }}>
+                        <div className="font-vt text-sm leading-none font-bold flex-1"
+                          style={{ color: pl >= 0 ? '#4ade80' : '#f87171', textShadow: `0 0 8px ${pl >= 0 ? '#4ade8044' : '#f8717144'}` }}>
                           {fmtK(pl)}
                         </div>
                       )}
                       {/* Orders */}
                       {orders > 0 && (
-                        <div className="font-mono text-[9px] mt-1 text-white/30">
+                        <div className="font-mono text-[9px] mt-auto text-white/25 leading-none">
                           {orders} orders
                         </div>
                       )}
                     </div>
                   )
                 })}
-                {/* WEEK col */}
-                <div className="min-h-[72px] p-2 flex flex-col justify-center bg-sky-400/3 border-l border-sky-400/8">
-                  <div className="font-vt text-[9px] text-sky-400/30 tracking-widest mb-1">WK{wi + 1}</div>
-                  {wPL !== 0 ? (
-                    <>
-                      <div className="font-vt text-sm leading-none"
-                        style={{ color: wPL >= 0 ? '#4ade80' : '#f87171' }}>
-                        {fmtK(wPL)}
-                      </div>
-                      {wOrders > 0 && (
-                        <div className="font-mono text-[9px] mt-1 text-white/25">{wOrders} orders</div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="font-vt text-sm text-sky-400/20">$0</div>
+                {/* WEEK/TOTAL col */}
+                <div className="min-h-[80px] p-2.5 flex flex-col justify-center"
+                  style={{ background: 'rgba(56,189,248,0.03)', borderLeft: '1px solid rgba(56,189,248,0.08)' }}>
+                  <div className="font-vt text-[9px] text-sky-400/30 tracking-widest mb-1">Week {wi + 1}</div>
+                  <div className="font-vt text-sm leading-none"
+                    style={{ color: wPL > 0 ? '#4ade80' : wPL < 0 ? '#f87171' : 'rgba(56,189,248,0.2)', textShadow: wPL !== 0 ? `0 0 6px ${wPL > 0 ? '#4ade8033' : '#f8717133'}` : 'none' }}>
+                    {wPL !== 0 ? fmtK(wPL) : '$0'}
+                  </div>
+                  {wOrders > 0 && (
+                    <div className="font-mono text-[9px] mt-1.5 text-white/20">{wOrders} orders</div>
                   )}
                 </div>
               </div>
