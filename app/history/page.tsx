@@ -83,8 +83,8 @@ export default function HistoryPage() {
   function fmtK(n: number) {
     const abs = Math.abs(n)
     const sign = n >= 0 ? '+' : '-'
-    if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(1)}k`
-    return `${sign}$${fmt(abs, 0)}`
+    if (abs >= 1000) return `${sign}$${(abs / 1000).toFixed(2)}k`
+    return `${sign}$${fmt(abs, 2)}`
   }
   function fmtPL(n: number) { return (n >= 0 ? '+' : '-') + '$' + fmt(Math.abs(n)) }
   function plHex(n: number) { return n > 0 ? '#4ade80' : n < 0 ? '#f87171' : 'rgba(56,189,248,0.4)' }
@@ -150,7 +150,6 @@ export default function HistoryPage() {
       <div className="fixed inset-0 pointer-events-none z-0"
         style={{ backgroundImage: 'linear-gradient(rgba(56,189,248,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.025) 1px,transparent 1px)', backgroundSize: '40px 40px' }} />
 
-      {/* HEADER */}
       <header className="bg-[#071428] border-b border-sky-400/20 sticky top-0 z-50"
         style={{ boxShadow: '0 1px 20px rgba(56,189,248,0.08)' }}>
         <div className="max-w-[1400px] mx-auto px-3 h-[56px] flex items-center gap-2">
@@ -187,16 +186,12 @@ export default function HistoryPage() {
 
       <div className="max-w-[1400px] mx-auto px-3 pt-3 relative z-10">
 
-        {/* PERFORMANCE TITLE */}
         <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-3 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           PERFORMANCE
         </div>
 
-        {/* TOP ROW: Monthly PL + Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
-
-          {/* MONTHLY P/L BIG */}
           <div className="bg-[#071428] border border-sky-400/20 px-6 py-5 flex flex-col items-center justify-center relative overflow-hidden"
             style={{ boxShadow: 'inset 0 0 40px rgba(56,189,248,0.03)' }}>
             <div className="absolute inset-0 pointer-events-none"
@@ -207,7 +202,6 @@ export default function HistoryPage() {
               {fmtPL(monthPL)}
             </div>
             <div className="font-mono text-xs text-sky-400/40 mb-5 z-10">{monthOrders} orders this month</div>
-            {/* Navigation — ref style */}
             <div className="flex items-center gap-3 z-10">
               <button onClick={prevMonth}
                 className="w-8 h-8 flex items-center justify-center border border-sky-400/20 text-sky-400/50 hover:text-sky-400 hover:border-sky-400/50 transition-all cursor-pointer bg-transparent font-vt text-base">
@@ -226,7 +220,6 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* MONTHLY STATS 2x2 */}
           <div className="grid grid-cols-2 gap-2">
             {[
               { label: 'BEST DAY', val: bestDay ? fmtPL(dayPL(bestDay)) : '+$0.00', sub: bestDay ? fmtDayShort(bestDay) : '—', color: '#4ade80', accent: 'bg-green-400' },
@@ -246,7 +239,6 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        {/* MONTHLY BAR CHART */}
         <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           MONTHLY P/L {year} (USD)
@@ -287,14 +279,12 @@ export default function HistoryPage() {
           </div>
         </div>
 
-        {/* DAILY CALENDAR */}
         <div className="font-vt text-base tracking-[0.14em] text-sky-400 flex items-center gap-2 mb-2 before:content-['◆'] before:text-xs after:content-[''] after:flex-1 after:h-px after:bg-gradient-to-r after:from-sky-400/40 after:to-transparent"
           style={{ textShadow: '0 0 8px rgba(56,189,248,0.4)' }}>
           DAILY P/L CALENDAR (USD)
         </div>
 
         <div className="bg-[#071428] border border-sky-400/15 overflow-hidden mb-4">
-          {/* Header */}
           <div className="grid border-b border-sky-400/10" style={{ gridTemplateColumns: 'repeat(5,1fr) 100px' }}>
             {['MON', 'TUE', 'WED', 'THU', 'FRI'].map(d => (
               <div key={d} className="font-vt text-[11px] text-center py-2.5 tracking-widest text-sky-400/40 border-r border-sky-400/8">{d}</div>
@@ -322,7 +312,6 @@ export default function HistoryPage() {
                     <div key={di}
                       className="border-r min-h-[80px] p-2.5 transition-all relative flex flex-col"
                       style={{ background: bg, borderColor: border }}>
-                      {/* Date */}
                       {today ? (
                         <div className="w-7 h-7 rounded-full bg-sky-400 flex items-center justify-center mb-1.5 flex-shrink-0"
                           style={{ boxShadow: '0 0 10px rgba(56,189,248,0.6)' }}>
@@ -331,14 +320,12 @@ export default function HistoryPage() {
                       ) : (
                         <div className={`font-vt text-sm mb-1.5 leading-none ${pl !== null ? pl > 0 ? 'text-green-300/60' : 'text-red-300/60' : 'text-sky-400/20'}`}>{d}</div>
                       )}
-                      {/* P/L */}
                       {pl !== null && (
                         <div className="font-vt text-sm leading-none font-bold flex-1"
                           style={{ color: pl >= 0 ? '#4ade80' : '#f87171', textShadow: `0 0 8px ${pl >= 0 ? '#4ade8044' : '#f8717144'}` }}>
                           {fmtK(pl)}
                         </div>
                       )}
-                      {/* Orders */}
                       {orders > 0 && (
                         <div className="font-mono text-[9px] mt-auto text-white/25 leading-none">
                           {orders} orders
@@ -347,13 +334,12 @@ export default function HistoryPage() {
                     </div>
                   )
                 })}
-                {/* WEEK/TOTAL col */}
                 <div className="min-h-[80px] p-2.5 flex flex-col justify-center"
                   style={{ background: 'rgba(56,189,248,0.03)', borderLeft: '1px solid rgba(56,189,248,0.08)' }}>
                   <div className="font-vt text-[9px] text-sky-400/30 tracking-widest mb-1">Week {wi + 1}</div>
                   <div className="font-vt text-sm leading-none"
                     style={{ color: wPL > 0 ? '#4ade80' : wPL < 0 ? '#f87171' : 'rgba(56,189,248,0.2)', textShadow: wPL !== 0 ? `0 0 6px ${wPL > 0 ? '#4ade8033' : '#f8717133'}` : 'none' }}>
-                    {wPL !== 0 ? fmtK(wPL) : '$0'}
+                    {wPL !== 0 ? fmtK(wPL) : '$0.00'}
                   </div>
                   {wOrders > 0 && (
                     <div className="font-mono text-[9px] mt-1.5 text-white/20">{wOrders} orders</div>
