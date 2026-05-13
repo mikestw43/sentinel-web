@@ -3,6 +3,13 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Allow API routes through without auth check
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
   const response = NextResponse.next()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,16 +25,18 @@ export async function middleware(request: NextRequest) {
       },
     }
   )
+
   const { data: { user } } = await supabase.auth.getUser()
-  const { pathname } = request.nextUrl
   const publicPaths = ['/', '/register']
   const isPublic = publicPaths.includes(pathname)
+
   if (!user && !isPublic) {
     return NextResponse.redirect(new URL('/', request.url))
   }
   if (user && isPublic) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
+
   return response
 }
 
